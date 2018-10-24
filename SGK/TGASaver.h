@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-static class TGASaver
+class TGASaver
 {
 public:
 	static void saveToFile(const std::string & filename, 

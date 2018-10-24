@@ -7,7 +7,6 @@
 
 const std::string ext = ".tga";
 
-#pragma pack(4)
 struct TGAHeader
 {
 	uint8_t id = 0;
