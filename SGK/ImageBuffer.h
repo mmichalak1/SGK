@@ -12,13 +12,16 @@ public:
 
 	void clearWithColor(const uint32_t &color);
 
-	void triangle(const float3 &t1, const float3 &t2, const float3 &t3, const float4 &color);
+	void rasterize(const float3 &t1, const float3 &t2, const float3 &t3, const float4 &color);
 
 	std::vector<uint32_t>* getColors();
 	uint16_t getWidth() const;
 	uint16_t getHeigth() const;
 
 private:
+
+	float interpolateDepth(const float3 &t1, const float3 &t2, const float3 &t3) const;
+
 	std::vector<float> depths;
 	std::vector<uint32_t> colors;
 
