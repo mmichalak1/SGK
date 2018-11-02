@@ -53,8 +53,6 @@ void TGASaver::saveToFile(const std::string & filename, std::vector<uint32_t>* c
 
 	uint32_t cool = 0x00ff0000;
 
-	std::cout << "Size of struct: " << sizeof(header);
-
 	fwrite(colors->data(), sizeof(uint32_t) , colors->size(), file);
 
 	fclose(file);

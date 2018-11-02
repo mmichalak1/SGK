@@ -12,7 +12,7 @@ public:
 
 	void clearWithColor(const uint32_t &color);
 
-	void rasterize(const float3 &t1, const float3 &t2, const float3 &t3, const float4 &color);
+	void rasterize(const float3 &t1, const float3 &t2, const float3 &t3, const float4 &color, const float4 &t2Color, const float4 &t3Color);
 
 	std::vector<uint32_t>* getColors();
 	uint16_t getWidth() const;
