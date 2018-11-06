@@ -8,9 +8,9 @@ float4::float4()
 
 float4::float4(float alpha, float red, float green, float blue) :
 	a{alpha},
-	x{red},
-	y{green},
-	z{blue}
+	r{red},
+	g{green},
+	b{blue}
 {
 }
 

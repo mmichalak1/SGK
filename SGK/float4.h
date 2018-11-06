@@ -6,9 +6,30 @@ public:
 	float4(float alpha, float red, float green, float blue);
 	~float4();
 
-	float a = 0;
-	float x = 0;
-	float y = 0;
-	float z = 0;
+	float& operator[] (const size_t index)
+	{
+		return arr[index];
+	}
+
+	union
+	{
+		struct
+		{
+			float a;
+			float r;
+			float g;
+			float b;
+		};
+
+		struct
+		{
+			float z;
+			float x;
+			float y;
+			float z;
+		};
+
+		float arr[4];
+	};
 };
 
