@@ -4,7 +4,7 @@ struct float3
 public:
 	union
 	{
-		struct 
+		struct
 		{
 			float x;
 			float y;
