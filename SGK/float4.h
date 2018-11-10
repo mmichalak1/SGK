@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+
 class float4
 {
 public:
@@ -52,4 +54,5 @@ public:
 		float arr[4];
 	};
 };
+std::ostream& operator<<(std::ostream& out, const float4& vec);
 

@@ -33,14 +33,14 @@ void ImageBuffer::clearWithColor(const uint32_t & color)
 
 void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3, float4 t1Color, float4 t2Color, float4 t3Color)
 {
-	float t1x = (1 + t1.x) * m_width * 0.5f;
-	float t1y = (1 + t1.y) * m_height * 0.5f;
+	float t1x = (1.f + t1.x) * m_width * 0.5f;
+	float t1y = (1.f + t1.y) * m_height * 0.5f;
 
-	float t2x = (1 + t2.x) * m_width * 0.5f;
-	float t2y = (1 + t2.y) * m_height * 0.5f;
+	float t2x = (1.f + t2.x) * m_width * 0.5f;
+	float t2y = (1.f + t2.y) * m_height * 0.5f;
 
-	float t3x = (1 + t3.x) * m_width * 0.5f;
-	float t3y = (1 + t3.y) * m_height * 0.5f;
+	float t3x = (1.f + t3.x) * m_width * 0.5f;
+	float t3y = (1.f + t3.y) * m_height * 0.5f;
 
 	const float dx12 = t1x - t2x;
 	const float dx23 = t2x - t3x;
@@ -60,45 +60,33 @@ void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3
 	miny = std::max(miny, 0.f);
 	maxy = std::min(maxy, float(m_height - 1));
 
-	bool tl1 = false;
-	bool tl2 = false;
-	bool tl3 = false;
+	bool tl1 = dy12 < 0. || (dy12 == 0 && dx12 > 0);
+	bool tl2 = dy23 < 0. || (dy23 == 0 && dx23 > 0);
+	bool tl3 = dy31 < 0. || (dy31 == 0 && dx31 > 0);
 
 	for (int i = minx; i < maxx; ++i)
 	{
 		for (int j = miny; j < maxy; ++j)
 		{
-			if (dy12 < 0.f || (dy12 == 0 && dx12 > 0.f))
-				tl1 = true;
-			if (dy23 < 0.f || (dy23 == 0 && dx23 > 0.f))
-				tl2 = true;
-			if (dy31 < 0.f || (dy31 == 0 && dx31 > 0.f))
-				tl3 = true;
+			if (dx12 * (j - t1y) - dy12 * (i - t1x) > 0 &&
+				dx23 * (j - t2y) - dy23 * (i - t2x) > 0 &&
+				dx31 * (j - t3y) - dy31 * (i - t3x) > 0)
+			{
 
-			if (!tl1)
-				if (dx12 * (j - t1y) - dy12 * (i - t1x) > 0)
-					continue;
-			if (!tl2)
-				if (dx23 * (j - t2y) - dy23 * (i - t2x) > 0)
-					continue;
-			if (!tl3)
-				if (dx31 * (j - t3y) - dy31 * (i - t3x) > 0)
-					continue;
+				const float lambda1 = (dy23 * (i - t3x) + (t3x - t2x) * (j - t3y)) / (dy23 * (t1x - t3x) + (t3x - t2x) * (t1y - t3y));
+				const float lambda2 = (dy31 * (i - t3x) + (t1x - t3x) * (j - t3y)) / (dy31 * dx23 + (t1x - t3x) * dy23);
+				const float lambda3 = 1.f - lambda1 - lambda2;
 
-			const float lambda1 = (dy23 * (i - t3x) + (t3x - t2x) * (j - t3y)) / (dy23 * (t1x - t3x) + (t3x - t2x) * (t1y - t3y));
-			const float lambda2 = (dy31 * (i - t3x) + (t1x - t3x) * (j - t3y)) / (dy31 * dx23 + (t1x - t3x) * dy23);
-			const float lambda3 = 1.f - lambda1 - lambda2;
+				auto color = t1Color * lambda1 + t2Color * lambda2 + t3Color * lambda3;
+				auto depth = t1.z * lambda1 + t2.z * lambda2 + t3.z * lambda3;
 
-			auto color = t1Color * lambda1 + t2Color * lambda2 + t3Color * lambda3;
-			auto depth = t1.z * lambda1 + t2.z * lambda2 + t3.z * lambda3;
-
-			int indice = j * m_width + i;
-			if (depth < 0.0f)
-				continue;
-			if (depth > depths[indice])
-				continue;
-			depths[indice] = depth;
-			colors.at(indice) = toUintColor(color);
+				int indice = j * m_width + i;
+				if(depth < depths[indice])
+				{
+					colors[indice] = toUintColor(color);
+					depths[indice] = depth;
+				}
+			}
 		}
 	}
 

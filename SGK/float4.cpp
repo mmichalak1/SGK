@@ -18,3 +18,9 @@ float4::float4(float alpha, float red, float green, float blue) :
 float4::~float4()
 {
 }
+
+std::ostream & operator<<(std::ostream & out, const float4 & vec)
+{
+	out << "< " << vec.a << " " << vec.r << " " << vec.g << " " << vec.b << " >";
+	return out;
+}
