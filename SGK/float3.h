@@ -21,7 +21,16 @@ public:
 	{
 		return arr[index];
 	}
-	
+
+	float3& operator += (const float3 &other)
+	{
+		x += other.x;
+		y += other.y;
+		z += other.z;
+
+		return *this;
+	}
+
 	void normalizeSelf();
 
 	float3();

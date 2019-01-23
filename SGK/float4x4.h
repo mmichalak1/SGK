@@ -14,6 +14,7 @@ public:
 	const float4 operator[] (const int index) const;
 
 private:
-	std::array<float4, 4> data;
+	float4 data[4];
 };
+std::ostream& operator<<(std::ostream& out, const float4x4& vec);
 

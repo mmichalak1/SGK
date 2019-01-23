@@ -1,12 +1,19 @@
 #include "stdafx.h"
 #include "ImageBuffer.h"
+#include "Math.h"
 
 #include <algorithm>
 
 union colorU
 {
 	uint32_t uint32;
-	uint8_t colors[4];
+	struct
+	{
+		uint8_t A;
+		uint8_t R;
+		uint8_t G;
+		uint8_t B;
+	} ARGB;
 };
 
 constexpr uint8_t maxColor = 255;
@@ -68,28 +75,51 @@ void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3
 	{
 		for (int j = miny; j < maxy; ++j)
 		{
-			if (dx12 * (j - t1y) - dy12 * (i - t1x) > 0 &&
-				dx23 * (j - t2y) - dy23 * (i - t2x) > 0 &&
-				dx31 * (j - t3y) - dy31 * (i - t3x) > 0)
+			if (((dx12 * (j - t1y) - dy12 * (i - t1x) > 0 && !tl1) || (dx12 * (j - t1y) - dy12 * (i - t1x) >=0) && tl1) &&
+				((dx23 * (j - t2y) - dy23 * (i - t2x) > 0 && !tl2) || (dx23 * (j - t2y) - dy23 * (i - t2x) >=0) && tl2) &&
+				((dx31 * (j - t3y) - dy31 * (i - t3x) > 0 && !tl3) || (dx31 * (j - t3y) - dy31 * (i - t3x) >=0) && tl3))
 			{
 
 				const float lambda1 = (dy23 * (i - t3x) + (t3x - t2x) * (j - t3y)) / (dy23 * (t1x - t3x) + (t3x - t2x) * (t1y - t3y));
 				const float lambda2 = (dy31 * (i - t3x) + (t1x - t3x) * (j - t3y)) / (dy31 * dx23 + (t1x - t3x) * dy23);
 				const float lambda3 = 1.f - lambda1 - lambda2;
 
-				auto color = t1Color * lambda1 + t2Color * lambda2 + t3Color * lambda3;
 				auto depth = t1.z * lambda1 + t2.z * lambda2 + t3.z * lambda3;
 
 				int indice = j * m_width + i;
 				if(depth < depths[indice])
 				{
-					colors[indice] = toUintColor(color);
+					colors[indice] = toColor(t1Color * lambda1 + t2Color * lambda2 + t3Color * lambda3);
 					depths[indice] = depth;
 				}
 			}
 		}
 	}
 
+}
+
+void ImageBuffer::rasterize(const float3 & v1, const float3 & v2, const float3 & v3, const VertexProcessor & vertProc)
+{
+	rasterize(
+		vertProc.triangle(v1),
+		vertProc.triangle(v2),
+		vertProc.triangle(v3),
+		{1.f, 0.f, 0.f, 0.f},
+		{1.f, 0.f, 0.f, 0.f},
+		{1.f, 0.f, 0.f, 0.f}
+	);
+}
+
+void ImageBuffer::rasterize(const Vertex& v1, const Vertex & v2, const Vertex & v3, const VertexProcessor & vertProc, const PointLight& light)
+{
+	rasterize(
+		vertProc.triangle(v1.position),
+		vertProc.triangle(v2.position),
+		vertProc.triangle(v3.position),
+		calcluateLight(vertProc.vertexToWorld(v1.position), vertProc.vertexToWorld(v1.normal), light),
+		calcluateLight(vertProc.vertexToWorld(v2.position), vertProc.vertexToWorld(v2.normal), light),
+		calcluateLight(vertProc.vertexToWorld(v3.position), vertProc.vertexToWorld(v3.normal), light)
+	);
 }
 
 std::vector<uint32_t>* ImageBuffer::getColors()
@@ -107,13 +137,32 @@ uint16_t ImageBuffer::getHeigth() const
 	return m_height;
 }
 
-uint32_t ImageBuffer::toUintColor(const float4 & color) const
+float4 ImageBuffer::calcluateLight(const float3& position, float3 normal, const PointLight& light) const
+{
+
+	auto toLight =  light.position - position;
+	toLight.normalizeSelf();
+	normal.normalizeSelf();
+	auto angle = dot(normal, toLight);
+
+	angle = std::max(angle, 0.f);
+
+	auto result = light.color * angle * light.intensity;
+	float4 color = float4{ 1.f, 1.f, 1.f, 1.f };
+
+	result = color * result;
+
+	result.clamp(0.f, 1.0f);
+	return result;
+}
+
+uint32_t ImageBuffer::toColor(const float4 & color) const
 {
 	colorU c;
-	c.colors[3] = color.a * maxColor;
-	c.colors[2] = color.r * maxColor;
-	c.colors[1] = color.g * maxColor;
-	c.colors[0] = color.b * maxColor;
+	c.ARGB.A = uint8_t(color.a * maxColor);
+	c.ARGB.R = uint8_t(color.r * maxColor);
+	c.ARGB.G = uint8_t(color.g * maxColor);
+	c.ARGB.B = uint8_t(color.b * maxColor);
 
 	return c.uint32;
 }

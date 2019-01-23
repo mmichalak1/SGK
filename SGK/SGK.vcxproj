@@ -152,11 +152,16 @@
     <ClInclude Include="float4.h" />
     <ClInclude Include="float4x4.h" />
     <ClInclude Include="ImageBuffer.h" />
+    <ClInclude Include="int3.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TGASaver.h" />
     <ClInclude Include="Triangle.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexProcessor.h" />
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +169,11 @@
     <ClCompile Include="float4.cpp" />
     <ClCompile Include="float4x4.cpp" />
     <ClCompile Include="ImageBuffer.cpp" />
+    <ClCompile Include="int3.cpp" />
     <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="SGK.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -174,6 +183,7 @@
     </ClCompile>
     <ClCompile Include="TGASaver.cpp" />
     <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexProcessor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

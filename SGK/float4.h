@@ -13,6 +13,11 @@ public:
 		return arr[index];
 	}
 
+	float operator[] (size_t index) const
+	{
+		return arr[index];
+	}
+
 	float4& operator *= (const float num)
 	{
 		a *= num;
@@ -23,14 +28,33 @@ public:
 		return *this;
 	}
 
+	void clamp(const float min, const float max)
+	{
+		x = x < min ? min : (x > max ? max : x);
+		y = y < min ? min : (y > max ? max : y);
+		z = z < min ? min : (z > max ? max : z);
+		w = w < min ? min : (w > max ? max : w);
+	}
+
 	float4 operator * (const float num)
 	{
-		return float4{ a * num, x * num, y * num, z * num };
+		return { a * num, x * num, y * num, z * num };
 	}
+
+	float4 operator * (float num) const
+	{
+		return { a * num, x * num, y * num, z * num };
+	}
+
+	float4 operator *(const float4 &other)
+	{
+		return { x * other.x, y * other.y, z * other.z, w * other.w };
+	}
+
 
 	float4 operator + (const float4 &color)
 	{
-		return float4{ a + color.a, x + color.x, y + color.y, z + color.z };
+		return float4{ a + color.a, r + color.r, g + color.g, b + color.b };
 	}
 
 	union
@@ -45,10 +69,10 @@ public:
 
 		struct
 		{
-			float a;
 			float x;
 			float y;
 			float z;
+			float w;
 		};
 
 		float arr[4];

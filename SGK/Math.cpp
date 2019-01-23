@@ -12,17 +12,20 @@ float3 normalize(const float3 & vector)
 
 float3 cross(const float3 & v1, const float3 & v2)
 {
-	return float3{ v1.y * v1.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
+	return float3{
+		v1.y * v2.z - v1.z * v2.y,
+		v1.z * v2.x - v1.x * v2.z,
+		v1.x * v2.y - v1.y * v2.x };
 }
 
-float3 dot(const float3 & v1, const float3 & v2)
+float dot(const float3 & v1, const float3 & v2)
 {
-	return float3{ v1.x * v2.x, v1.y * v2.y, v1.z * v2.z };
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-float4 dot(const float4 & v1, const float4 & v2)
+float dot(const float4 & v1, const float4 & v2)
 {
-	return float4{v1.a * v2.a, v1.x * v2.x, v1.y * v2.y, v1.z * v2.z };
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
 
 }
 
@@ -30,20 +33,38 @@ float4x4 mul(const float4x4 & m1, const float4x4 & m2)
 {
 	float4x4 result;
 
-	auto m1c1 = m1[0];
-	auto m1c2 = m1[1];
-	auto m1c3 = m1[2];
-	auto m1c4 = m1[3];
+	auto trs = transpose(m1);
 
-	auto m2c1 = m2[0];
-	auto m2c2 = m2[1];
-	auto m2c3 = m2[2];
-	auto m2c4 = m2[3];
+	return {
+		{dot(trs[0], m2[0]), dot(trs[1], m2[0]),dot(trs[2], m2[0]),dot(trs[3], m2[0])},
+		{dot(trs[0], m2[1]), dot(trs[1], m2[1]),dot(trs[2], m2[1]),dot(trs[3], m2[1])},
+		{dot(trs[0], m2[2]), dot(trs[1], m2[2]),dot(trs[2], m2[2]),dot(trs[3], m2[2])},
+		{dot(trs[0], m2[3]), dot(trs[1], m2[3]),dot(trs[2], m2[3]),dot(trs[3], m2[3])}
+	};
+}
 
-	result[0] = m1c1 * m2c1[0] + m1c2 * m2c1[1] + m1c3 * m2c1[2] + m1c4 * m2c1[3];
-	result[1] = m1c1 * m2c2[0] + m1c2 * m2c2[1] + m1c3 * m2c2[2] + m1c4 * m2c2[3];
-	result[2] = m1c1 * m2c3[0] + m1c2 * m2c3[1] + m1c3 * m2c3[2] + m1c4 * m2c3[3];
-	result[3] = m1c1 * m2c4[0] + m1c2 * m2c4[1] + m1c3 * m2c4[2] + m1c4 * m2c4[3];
+float4x4 transpose(const float4x4 &mat)
+{
+	auto r1 = float4{ mat[0].x,mat[1].x, mat[2].x, mat[3].x };
+	auto r2 = float4{ mat[0].y,mat[1].y, mat[2].y, mat[3].y };
+	auto r3 = float4{ mat[0].z,mat[1].z, mat[2].z, mat[3].z };
+	auto r4 = float4{ mat[0].w,mat[1].w, mat[2].w, mat[3].w };
 
-	return result;
+	return float4x4{ r1, r2, r3, r4 };
+}
+
+float4 mul(const float4& vec, const float4x4& mat)
+{
+	auto trns = transpose(mat);
+
+	return float4{
+		dot(vec, trns[0]),
+		dot(vec, trns[1]),
+		dot(vec, trns[2]),
+		dot(vec, trns[3]) };
+}
+
+float4 mix(const float4 & c1, const float4 & c2, float ratio)
+{
+	return c1 * (1.f - ratio) + c2 * ratio;
 }

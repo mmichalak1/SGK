@@ -21,6 +21,6 @@ float4::~float4()
 
 std::ostream & operator<<(std::ostream & out, const float4 & vec)
 {
-	out << "< " << vec.a << " " << vec.r << " " << vec.g << " " << vec.b << " >";
+	out << "< " << vec.x << " " << vec.y << " " << vec.z << " " << vec.w << " >";
 	return out;
 }
