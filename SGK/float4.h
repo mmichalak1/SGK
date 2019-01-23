@@ -38,12 +38,12 @@ public:
 
 	float4 operator * (const float num)
 	{
-		return { a * num, x * num, y * num, z * num };
+		return { x * num, y * num, z * num, w * num };
 	}
 
 	float4 operator * (float num) const
 	{
-		return { a * num, x * num, y * num, z * num };
+		return { x * num, y * num, z * num, w * num };
 	}
 
 	float4 operator *(const float4 &other)
@@ -54,7 +54,22 @@ public:
 
 	float4 operator + (const float4 &color)
 	{
-		return float4{ a + color.a, r + color.r, g + color.g, b + color.b };
+		return float4{ x + color.x, y + color.y, z + color.z, w + color.w };
+	}
+
+	float4 operator - (const float4 &color)
+	{
+		return float4{ x - color.x, y - color.y, z - color.z, w - color.w };
+	}
+
+	float4& operator -= (const float value)
+	{
+		x -= value;
+		y -= value;
+		z -= value;
+		w -= value;
+
+		return *this;
 	}
 
 	union

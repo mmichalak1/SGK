@@ -104,9 +104,9 @@ void ImageBuffer::rasterize(const float3 & v1, const float3 & v2, const float3 &
 		vertProc.triangle(v1),
 		vertProc.triangle(v2),
 		vertProc.triangle(v3),
-		{1.f, 0.f, 0.f, 0.f},
-		{1.f, 0.f, 0.f, 0.f},
-		{1.f, 0.f, 0.f, 0.f}
+		{1.f, 1.f, 1.f, 1.f},
+		{1.f, 1.f, 1.f, 1.f},
+		{1.f, 1.f, 1.f, 1.f}
 	);
 }
 
@@ -150,7 +150,7 @@ float4 ImageBuffer::calcluateLight(const float3& position, float3 normal, const 
 	auto result = light.color * angle * light.intensity;
 	float4 color = float4{ 1.f, 1.f, 1.f, 1.f };
 
-	result = color * result;
+	result = color - result;
 
 	result.clamp(0.f, 1.0f);
 	return result;
