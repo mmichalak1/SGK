@@ -3,7 +3,7 @@
 
 #include "Vertex.h"
 #include "VertexProcessor.h"
-#include "PointLight.h"
+#include "Light.h"
 
 struct Color {
 	uint8_t R;
@@ -22,17 +22,16 @@ public:
 	void rasterize(const float3 &t1, const float3 &t2, const float3 &t3,
 		float4 color = float4( 1.0f, 1.0f, 0.0f, 0.0f ), float4 t2Color = { 1.0f, 0.0f, 1.0f, 0.0f }, float4 t3Color = { 1.0f, 0.0f, 0.0f, 1.0f });
 
+	void rasterizePerPix(const Vertex & t1, const Vertex & t2, const Vertex & t3, const VertexProcessor& vp, const Light & light);
+
 	void rasterize(const float3& v1, const float3& v2, const float3& v3, const VertexProcessor& vertProc);
-	void rasterize(const Vertex& v1, const Vertex& v2, const Vertex& v3, const VertexProcessor& vertProc, const PointLight& light);
+	void rasterize(const Vertex& v1, const Vertex& v2, const Vertex& v3, const VertexProcessor& vertProc, const Light& light);
 
 	std::vector<uint32_t>* getColors();
 	uint16_t getWidth() const;
 	uint16_t getHeigth() const;
 
 private:
-
-	float4 calcluateLight(const float3& position, float3 normal, const PointLight& light) const;
-
 	std::vector<float> depths;
 	std::vector<uint32_t> colors;
 
@@ -40,5 +39,6 @@ private:
 	uint16_t m_height;
 
 	uint32_t toColor(const float4 &color) const;
+	uint32_t toColor(const float3 & color) const;
 };
 

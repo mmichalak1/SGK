@@ -148,11 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FastFloat3.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
     <ClInclude Include="float4x4.h" />
     <ClInclude Include="ImageBuffer.h" />
     <ClInclude Include="int3.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="OBJLoader.h" />
@@ -165,6 +167,7 @@
     <ClInclude Include="VertexProcessor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FastFloat3.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />
     <ClCompile Include="float4x4.cpp" />

@@ -39,6 +39,20 @@ void Mesh::draw(ImageBuffer & imgBuff, const VertexProcessor & processor, const 
 	}
 }
 
+void Mesh::drawPerPix(ImageBuffer& buffer, const VertexProcessor& vp, const Light& light)
+{
+	for (const auto& triangle : m_indices)
+	{
+		buffer.rasterizePerPix(
+			m_verticies[triangle.x],
+			m_verticies[triangle.y],
+			m_verticies[triangle.z],
+			vp,
+			light
+		);
+	}
+}
+
 
 void Mesh::calculateNormal()
 {

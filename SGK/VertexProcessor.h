@@ -1,6 +1,10 @@
 #pragma once
 #include "float4x4.h"
+#ifdef FAST
+#include "FastFloat3.h"
+#else // FAST
 #include "float3.h"
+#endif
 
 class VertexProcessor
 {
@@ -20,8 +24,13 @@ public:
 
 	float3 triangle(const float3 &v1) const;
 	float3 vertexToWorld(const float3& vertex) const;
+	float3 toView(const float3& vec) const;
+	float3 world2View(const float3 vec) const;
 
 	void printData() const;
+
+	float3 lookDir;
+	float3 eyePos;
 private:
 
 	void setIdentity();

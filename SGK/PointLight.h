@@ -1,15 +1,17 @@
 #pragma once
+#include "Light.h"
 #include "float4.h"
-#include "float3.h"
-class PointLight
+
+class PointLight : public Light
 {
 public:
 	PointLight(const float4 color, const float3 postion, const float intensity);
 	~PointLight();
 
-	float4 color;
-	float3 position;
+	float4 calculateLight(const float3 position, const float3& normal) const override;
+	float3 calculateLight(const float3 position, const float3& normal, const VertexProcessor& vp) const override;
 
-	float intensity;
+private:
+	float m_intensity;
 };
 

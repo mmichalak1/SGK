@@ -26,21 +26,24 @@ void VertexProcessor::setPerspective(float fovy, float aspect, float near, float
 	view2proj[1] = float4(0.f, f, 0.f, 0.f);
 	view2proj[2] = float4(0.f, 0.f, (far + near) / (near - far), -1.f);
 	view2proj[3] = float4(0.f, 0.f, (2.f * far * near) / (near - far), 0.f);
+	update();
 }
 
 void VertexProcessor::setLookAt(const float3 & eye, const float3 & center, const float3 & up)
 {
-	auto f = center - eye;
+	lookDir = center - eye;
+	eyePos = eye;
 
-	f.normalizeSelf();
+	lookDir.normalizeSelf();
 
-	auto s = cross(f, up);
-	auto u = cross(s, f);
+	auto s = cross(lookDir, up);
+	auto u = cross(s, lookDir);
 
-	world2view[0] = float4(s.x, u.x, -f.x, 0.0f);
-	world2view[1] = float4(s.y, u.y, -f.y, 0.0f);
-	world2view[2] = float4(s.z, u.z, -f.z, 0.0f);
+	world2view[0] = float4(s.x, u.x, -lookDir.x, 0.0f);
+	world2view[1] = float4(s.y, u.y, -lookDir.y, 0.0f);
+	world2view[2] = float4(s.z, u.z, -lookDir.z, 0.0f);
 	world2view[3] = float4(-eye.x, -eye.y, -eye.z, 1.0f);
+	update();
 }
 
 void VertexProcessor::update()
@@ -63,6 +66,24 @@ float3 VertexProcessor::vertexToWorld(const float3 & vertex) const
 	auto pos = float4(vertex.x, vertex.y, vertex.z, 1.0f);
 
 	pos = mul(pos, obj2world);
+
+	return float3{ pos.x / pos.w, pos.y / pos.w, pos.z / pos.w };
+}
+
+float3 VertexProcessor::toView(const float3 & vec) const
+{
+	auto pos = float4(vec.x, vec.y, vec.z, 1.0f);
+
+	pos = mul(pos, obj2view);
+
+	return float3{ pos.x / pos.w, pos.y / pos.w, pos.z / pos.w };
+}
+
+float3 VertexProcessor::world2View(const float3 vec) const
+{
+	auto pos = float4(vec.x, vec.y, vec.z, 1.0f);
+
+	pos = mul(pos, world2view);
 
 	return float3{ pos.x / pos.w, pos.y / pos.w, pos.z / pos.w };
 }
@@ -118,7 +139,6 @@ void VertexProcessor::multByRot(const float a, float3 v)
 	///Check optimalization
 	const float cmin = 1.f - c;
 
-	///TODO: force normalzied vector
 	v.normalizeSelf();
 	auto m = float4x4
 	{
@@ -140,4 +160,5 @@ void VertexProcessor::setIdentity()
 		{0.f, 0.f, 1.f, 0.f},
 		{0.f, 0.f, 0.f, 1.f}
 	};
+	update();
 }

@@ -1,11 +1,9 @@
 #pragma once
-
 #include "stdafx.h"
+#ifdef  FAST
 #include <cmath>
 #include <iostream>
 #include <intrin.h>
-
-#ifndef FAST
 
 struct float3
 {
@@ -20,7 +18,6 @@ public:
 		};
 		float arr[3];
 		__m128 mmv;
-
 	};
 
 	float operator[] (int index) const
@@ -45,14 +42,7 @@ public:
 
 	inline float3 operator +(const float3& other)
 	{
-#ifdef FAST
-		__m128 mmv = _mm_set_ps(0.f, z, y, x);
-		__m128 mmv = _mm_set_ps(0.f, other.z, other.y, other.x);
-
-
-#else // FASR
-		return { x + other.x, y + other.y, z + other.z };
-#endif
+		return { _mm_add_ps(mmv, other.mmv) };
 	}
 
 	inline float3 operator *(const float3& other) const
@@ -67,10 +57,11 @@ public:
 
 	float3();
 	float3(float x, float y, float z);
+	float3(__m128 val);
 	~float3();
 };
 std::ostream& operator<<(std::ostream& out, const float3& vec);
 float3 operator - (const float3 &v1, const float3 &v2);
 
-#endif // !FAST
+#endif //  FAST
 
