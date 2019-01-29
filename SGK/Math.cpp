@@ -64,6 +64,31 @@ float4 mul(const float4& vec, const float4x4& mat)
 		dot(vec, trns[3]) };
 }
 
+float4 fastMul(const float4& vec, const float4x4& matrix)
+{
+	float4 result;
+
+	auto mat = transpose(matrix);
+
+	__m128 x = _mm_loadu_ps(vec.arr);
+	__m128 A1 = _mm_loadu_ps(mat[0].arr);
+	__m128 A2 = _mm_loadu_ps(mat[1].arr);
+	__m128 A3 = _mm_loadu_ps(mat[2].arr);
+	__m128 A4 = _mm_loadu_ps(mat[3].arr);
+
+	__m128 m0 = _mm_mul_ps(A1, x);
+	__m128 m1 = _mm_mul_ps(A2, x);
+	__m128 m2 = _mm_mul_ps(A3, x);
+	__m128 m3 = _mm_mul_ps(A4, x);
+
+	__m128 sum_01 = _mm_hadd_ps(m0, m1);
+	__m128 sum_23 = _mm_hadd_ps(m2, m3);
+	__m128 res = _mm_hadd_ps(sum_01, sum_23);
+
+	_mm_storeu_ps(result.arr, res);
+	return result;
+}
+
 float4 mix(const float4 & c1, const float4 & c2, float ratio)
 {
 	return c1 * (1.f - ratio) + c2 * ratio;

@@ -6,7 +6,7 @@ const float min = -1.f;
 
 float3 Light::ambient = { 0.2f, 0.5f, 0.3f };
 
-PointLight::PointLight(const float4 col, const float3 pos, float intens) :
+PointLight::PointLight(const float3 col, const float3 pos, float intens) :
 	Light{ pos, col },
 	m_intensity{ intens }
 {
@@ -17,27 +17,25 @@ PointLight::~PointLight()
 {
 }
 
-float4 PointLight::calculateLight(const float3 position, const float3& normal) const
+float3 PointLight::calculateLight(const float3 position, const float3& normal) const
 {
-	auto toLight = m_position - position;
-	toLight.normalizeSelf();
-	auto angle = dot(normal, toLight);
+	auto N = normal.normalize();
+	auto V = (m_position - position);
+	auto L = V.normalize();
 
-	angle = std::max(angle, 0.f);
+	auto diff = dot(N, L);
+	diff = diff<0.f ? 0 : diff >1.f ? 1.f : diff;
 
-	auto result = m_color * angle * m_intensity;
-	float4 color = float4{ 1.f, 1.f, 1.f, 1.f };
+	auto result = ambient + m_color * diff;
 
-	result = color - result;
-
-	result.clamp(0.f, 1.0f);
+	result.clampSelf();
 	return result;
 }
 
 float3 PointLight::calculateLight(const float3 position, const float3 & normal, const VertexProcessor & vp) const
 {
-	auto N = vp.vertexToWorld(normal.normalize()).normalize();
-	auto V = (m_position - vp.vertexToWorld(position));
+	auto N = vp.vertexToWorld(normal).normalize();
+	auto V = (m_position - vp.vertexToWorld(position * -1.f));
 	auto L = V.normalize();
 
 	auto R = reflect(L* -1.f, N);
@@ -50,7 +48,7 @@ float3 PointLight::calculateLight(const float3 position, const float3 & normal, 
 
 	//spec = pow(spec, 64);
 
-	auto color = ambient + float3{ 1.f, 1.f, 1.f } * diff;
+	auto color = ambient + float3{ 1.f, 1.f, 1.f } * diff * m_intensity;
 	color.clampSelf();
 
 	auto pos_cam = vp.toView(position);
@@ -62,6 +60,6 @@ float3 PointLight::calculateLight(const float3 position, const float3 & normal, 
 
 	auto color2 = ambient + float3{ 1.f, 1.f, 1.f } * diff2;
 	color2.clampSelf();
-	return color2;
+	return color;
 }
 

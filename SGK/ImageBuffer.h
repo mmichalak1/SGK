@@ -20,7 +20,7 @@ public:
 	void clearWithColor(const uint32_t &color);
 
 	void rasterize(const float3 &t1, const float3 &t2, const float3 &t3,
-		float4 color = float4( 1.0f, 1.0f, 0.0f, 0.0f ), float4 t2Color = { 1.0f, 0.0f, 1.0f, 0.0f }, float4 t3Color = { 1.0f, 0.0f, 0.0f, 1.0f });
+		float3 color = { 1.0f, 0.0f, 0.0f }, float3 t2Color = { 0.0f, 1.0f, 0.0f }, float3 t3Color = { 0.0f, 0.0f, 1.0f });
 
 	void rasterizePerPix(const Vertex & t1, const Vertex & t2, const Vertex & t3, const VertexProcessor& vp, const Light & light);
 

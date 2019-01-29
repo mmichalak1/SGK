@@ -15,6 +15,7 @@ float dot(const float4 &v1, const float4 &v2);
 
 float4x4 mul(const float4x4 &m1, const float4x4 &m2);
 float4 mul(const float4& vec, const float4x4& mat);
+float4 fastMul(const float4& vec, const float4x4& mat);
 
 float4 mix(const float4& c1, const float4& c2, float ratio);
 

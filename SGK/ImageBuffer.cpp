@@ -38,7 +38,7 @@ void ImageBuffer::clearWithColor(const uint32_t & color)
 		pixColor = color;
 }
 
-void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3, float4 t1Color, float4 t2Color, float4 t3Color)
+void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3, float3 t1Color, float3 t2Color, float3 t3Color)
 {
 	float t1x = (1.f + t1.x) * m_width * 0.5f;
 	float t1y = (1.f + t1.y) * m_height * 0.5f;
@@ -169,9 +169,9 @@ void ImageBuffer::rasterize(const float3 & v1, const float3 & v2, const float3 &
 		vertProc.triangle(v1),
 		vertProc.triangle(v2),
 		vertProc.triangle(v3),
-		{1.f, 1.f, 1.f, 1.f},
-		{1.f, 1.f, 1.f, 1.f},
-		{1.f, 1.f, 1.f, 1.f}
+		{1.f, 1.f, 1.f},
+		{1.f, 1.f, 1.f},
+		{1.f, 1.f, 1.f}
 	);
 }
 

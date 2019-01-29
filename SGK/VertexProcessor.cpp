@@ -137,7 +137,36 @@ void VertexProcessor::multByRot(const float a, float3 v)
 	const float c = std::cos(a * pidiv180);
 
 	///Check optimalization
-	const float cmin = 1.f - c;
+	//const float cmin = 1.f - c;
+
+	v.normalizeSelf();
+	//auto m = float4x4
+	//{
+	//	{v.x * v.x * cmin + c,       v.x * v.y * cmin - v.z * s, v.x * v.z * cmin + v.y * s, 0.f},
+	//	{v.x * v.y * cmin + v.z * s, v.y * v.y * cmin + c, v.y * v.z * cmin - v.x * s, 0.f},
+	//	{v.x * v.z * cmin - v.y * s, v.y * v.z * cmin + v.x * s, v.z * v.z * cmin + c, 0.f},
+	//	{0.f, 0.f, 0.f, 1.f}
+	//};
+
+	auto m = float4x4
+	{
+		{v.x * v.x * (1.f - c) + c,       v.x * v.y * (1.f - c) - v.z * s, v.x * v.z * (1.f - c) + v.y * s, 0.f},
+		{v.x * v.y * (1.f - c) + v.z * s, v.y * v.y * (1.f - c) + c, v.y * v.z * (1.f - c) - v.x * s, 0.f},
+		{v.x * v.z * (1.f - c) - v.y * s, v.y * v.z * (1.f - c) + v.x * s, v.z * v.z * (1.f - c) + c, 0.f},
+		{0.f, 0.f, 0.f, 1.f}
+	};
+
+	obj2world = mul(m, obj2world);
+	update();
+}
+
+void VertexProcessor::fastMulByRot(const float a, float3 v)
+{
+	const float s = std::sin(a * pidiv180);
+	const float c = std::cos(a * pidiv180);
+
+	///Check optimalization
+	const float cmin = { 1.f - c };
 
 	v.normalizeSelf();
 	auto m = float4x4

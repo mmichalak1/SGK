@@ -17,6 +17,8 @@ public:
 
 	void multByRot(const float a, float3 v);
 
+	void fastMulByRot(const float a, float3 v);
+
 	void setPerspective(float fovy, float aspect, float near, float far);
 	void setLookAt(const float3 &eye, const float3 &center, const float3 &up = float3{ 0.f, 1.f, 0.f });
 
