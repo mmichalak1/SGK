@@ -19,8 +19,6 @@ public:
 			float z;
 		};
 		float arr[3];
-		__m128 mmv;
-
 	};
 
 	float operator[] (int index) const
@@ -58,6 +56,12 @@ public:
 	inline float3 operator *(const float3& other) const
 	{
 		return { x * other.x, y * other.y, z * other.z };
+	}
+
+
+	inline float3 operator -() const
+	{
+		return float3 { -x, -y, -z };
 	}
 
 	void normalizeSelf();

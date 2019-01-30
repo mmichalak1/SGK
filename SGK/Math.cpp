@@ -97,5 +97,6 @@ float4 mix(const float4 & c1, const float4 & c2, float ratio)
 float3 reflect(const float3& L, const float3& N)
 {
 	const auto Nn = N.normalize();
-	return N * 2.f * dot(N, L) - L;
+	//const auto Ln = L.normalize();
+	return L - N * 2.f * (dot(L, N));
 }

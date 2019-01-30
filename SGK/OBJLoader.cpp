@@ -16,7 +16,7 @@ Mesh OBJLoader::loadFromFile(const std::string& filename)
 
 	auto points = std::vector<float3>();
 	auto normals = std::vector<float3>();
-	auto texturing = std::vector<float3>();
+	auto triangles = std::vector<int3>();
 
 	while (std::getline(fileStream, line))
 	{
@@ -31,23 +31,10 @@ Mesh OBJLoader::loadFromFile(const std::string& filename)
 		{
 			normals.push_back(loadFloat3(line));
 		}
-		else if (line.rfind("vt", 0) == 0)
+		else if (line.rfind("f ") == 0)
 		{
-			texturing.push_back(loadFloat3(line));
+			loadIndices(line);
 		}
-		else if (line.rfind("g" , 0) == 0)
-		{
-			auto mesh = Mesh();
-
-			while (std::getline(fileStream, line))
-			{
-				if (line.rfind("f ", 0) == 0)
-				{
-					points.push_back(loadFloat3(line));
-				}
-			}
-		}
-
 	}
 
 	return result;
@@ -72,7 +59,22 @@ float3 OBJLoader::loadFloat3(const std::string & line)
 	return {std::stof(result[1]), std::stof(result[2]), std::stof(result[3])};
 }
 
-void OBJLoader::loadIndices()
+void OBJLoader::loadIndices(const std::string& line, std::vector<int3>& indices)
 {
+	auto ss = std::istringstream(line);
+	auto result = std::vector<std::string>(std::istream_iterator<std::string>{ss},
+		std::istream_iterator<std::string>());
 
+	ss = std::istringstream(result[1]);
+	auto splited = std::vector<std::string>();
+	auto str = std::string{ "" };
+	while (std::getline(ss, str, '/'))
+	{
+		splited.emplace_back(str);
+	}
+
+	using std::stoi;
+	indices.emplace_back({});
+
+	return;
 }

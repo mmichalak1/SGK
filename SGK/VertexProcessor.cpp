@@ -166,7 +166,7 @@ void VertexProcessor::fastMulByRot(const float a, float3 v)
 	const float c = std::cos(a * pidiv180);
 
 	///Check optimalization
-	const float cmin = { 1.f - c };
+	float cmin = { 1.f - c };
 
 	v.normalizeSelf();
 	auto m = float4x4
