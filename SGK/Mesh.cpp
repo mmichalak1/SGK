@@ -69,6 +69,24 @@ void Mesh::drawModelPerPix(ImageBuffer& buffer, const VertexProcessor& vp, const
 			light
 		);
 	}
+}
+
+void Mesh::drawModelPerPix(ImageBuffer& buffer, const VertexProcessor& vp, const std::vector<Light*>& lights) const
+{
+	for (int i = 0; i < m_indices.size(); i++)
+	{
+		auto v1 = Vertex{ m_positions[m_indices[i].x], m_normals[m_normalIndices[i].x] };
+		auto v2 = Vertex{ m_positions[m_indices[i].y], m_normals[m_normalIndices[i].y] };
+		auto v3 = Vertex{ m_positions[m_indices[i].z], m_normals[m_normalIndices[i].z] };
+
+		buffer.rasterizePerPix(
+			v1,
+			v2,
+			v3,
+			vp,
+			lights
+		);
+	}
 
 }
 

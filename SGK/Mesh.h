@@ -14,6 +14,7 @@ public:
 	void draw(ImageBuffer& imgBuff, const VertexProcessor& processor, const PointLight &pointLight);
 	void drawPerPix(ImageBuffer & buffer, const VertexProcessor & vp, const Light & light);
 	void drawModelPerPix(ImageBuffer & buffer, const VertexProcessor & vp, const Light & light) const;
+	void drawModelPerPix(ImageBuffer & buffer, const VertexProcessor & vp, const std::vector<Light*>& lights) const;
 	void calculateNormal();
 
 	void loadData(std::vector<float3>& positions, const std::vector<float3>& normals, std::vector<int3> indices, std::vector<int3> normalIndices);

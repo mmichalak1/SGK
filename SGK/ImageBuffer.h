@@ -24,6 +24,8 @@ public:
 
 	void rasterizePerPix(const Vertex & t1, const Vertex & t2, const Vertex & t3, const VertexProcessor& vp, const Light & light);
 
+	void rasterizePerPix(const Vertex & v1, const Vertex & v2, const Vertex & v3, const VertexProcessor & vp, const std::vector<Light*>& light);
+
 	void rasterize(const float3& v1, const float3& v2, const float3& v3, const VertexProcessor& vertProc);
 	void rasterize(const Vertex& v1, const Vertex& v2, const Vertex& v3, const VertexProcessor& vertProc, const Light& light);
 
