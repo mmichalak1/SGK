@@ -11,7 +11,5 @@ public:
 	float3 calculateLight(const float3 position, const float3& normal) const override;
 	float3 calculateLight(const float3 position, const float3& normal, const VertexProcessor& vp) const override;
 
-private:
-	float m_intensity;
 };
 

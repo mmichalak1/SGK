@@ -5,7 +5,8 @@
 #include <iostream>
 
 
-const std::string ext = ".tga";
+const std::string tgaExt = ".tga";
+const std::string ppmExt = ".ppm";
 
 unsigned short header[9] = {
 	0x0000, 0x0002, 0x0000, 0x0100, 0x0, 0x0,
@@ -15,7 +16,7 @@ unsigned short header[9] = {
 
 void TGASaver::saveToFile(const std::string & filename, std::vector<uint32_t>* colors, const uint16_t width, const uint16_t heigth)
 {
-	auto fileExt = filename + ext;
+	auto fileExt = filename + tgaExt;
 
 	FILE* file;
 
@@ -28,4 +29,17 @@ void TGASaver::saveToFile(const std::string & filename, std::vector<uint32_t>* c
 	fwrite(colors->data(), sizeof(uint32_t), colors->size(), file);
 
 	fclose(file);
+}
+
+void TGASaver::toPPM(const std::string & filename, std::vector<Color>* colors, const uint16_t width, const uint16_t heigth)
+{
+	auto fileExt = filename + ppmExt;
+
+	//std::reverse(colors->begin(), colors->end());
+
+	auto stream = std::ofstream(fileExt, std::ios::out | std::ios::binary);
+	stream << "P6\n" << width << " " << heigth << "\n255\n";
+	for (const auto& color : *colors)
+		stream << color.R << color.G << color.B;
+	stream.close();
 }

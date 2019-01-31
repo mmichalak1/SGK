@@ -25,17 +25,19 @@ public:
 	void update();
 
 	float3 triangle(const float3 &v1) const;
+	float3 light(const float3 &v) const;
 	float3 vertexToWorld(const float3& vertex) const;
 	float3 toView(const float3& vec) const;
 	float3 world2View(const float3 vec) const;
 
 	void printData() const;
+	void setIdentity();
 
 	float3 lookDir;
 	float3 eyePos;
 private:
 
-	void setIdentity();
+
 
 	float4x4 obj2world;
 	float4x4 world2view;

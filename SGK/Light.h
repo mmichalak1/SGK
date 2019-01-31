@@ -7,9 +7,10 @@ class Light
 public:
 	static float3 ambient;
 
-	Light(const float3 position, const float3 color) :
+	Light(const float3 position, const float3 color, const float intensity) :
 		m_position{position},
-		m_color{color}
+		m_color{color},
+		m_intensity{intensity}
 	{
 	}
 	virtual ~Light() {}
@@ -20,4 +21,5 @@ public:
 protected:
 	float3 m_position;
 	float3 m_color;
+	float m_intensity;
 };

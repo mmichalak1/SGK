@@ -53,6 +53,25 @@ void Mesh::drawPerPix(ImageBuffer& buffer, const VertexProcessor& vp, const Ligh
 	}
 }
 
+void Mesh::drawModelPerPix(ImageBuffer& buffer, const VertexProcessor& vp, const Light& light) const
+{
+	for (int i = 0; i < m_indices.size(); i++)
+	{
+		auto v1 = Vertex{ m_positions[m_indices[i].x], m_normals[m_normalIndices[i].x] };
+		auto v2 = Vertex{ m_positions[m_indices[i].y], m_normals[m_normalIndices[i].y] };
+		auto v3 = Vertex{ m_positions[m_indices[i].z], m_normals[m_normalIndices[i].z] };
+
+		buffer.rasterizePerPix(
+			v1,
+			v2,
+			v3,
+			vp,
+			light
+		);
+	}
+
+}
+
 
 void Mesh::calculateNormal()
 {
@@ -60,7 +79,7 @@ void Mesh::calculateNormal()
 	{
 		auto n = normalize(
 			cross(m_verticies[triangle.z].position - m_verticies[triangle.x].position,
-				  m_verticies[triangle.y].position - m_verticies[triangle.x].position));
+				m_verticies[triangle.y].position - m_verticies[triangle.x].position));
 
 		m_verticies[triangle.x].normal += n;
 		m_verticies[triangle.y].normal += n;
@@ -69,6 +88,23 @@ void Mesh::calculateNormal()
 
 	for (auto& vertex : m_verticies)
 		vertex.normal.normalizeSelf();
+}
+
+void Mesh::loadData(std::vector<float3>& positions,
+	const std::vector<float3>& normals,
+	std::vector<int3> indices,
+	std::vector<int3> normalIndices)
+{
+	m_indices = indices;
+	m_normalIndices = normalIndices;
+	m_positions = positions;
+	m_normals = normals;
+}
+
+void Mesh::reverse()
+{
+	for (auto& normal : m_normals)
+		normal *= -1.f;
 }
 
 Mesh Mesh::createCube()

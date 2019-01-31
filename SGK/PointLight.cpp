@@ -4,11 +4,10 @@
 
 const float min = -1.f;
 
-float3 Light::ambient = { 0.2f, 0.5f, 0.3f };
+float3 Light::ambient = { 0.3f, 0.3f, 0.3f};
 
 PointLight::PointLight(const float3 col, const float3 pos, float intens) :
-	Light{ pos, col },
-	m_intensity{ intens }
+	Light{ pos, col, intens }
 {
 }
 
@@ -34,42 +33,27 @@ float3 PointLight::calculateLight(const float3 position, const float3& normal) c
 
 float3 PointLight::calculateLight(const float3 position, const float3 & normal, const VertexProcessor & vp) const
 {
-	//auto N = vp.vertexToWorld(normal).normalize();
-	//auto V = (m_position - vp.vertexToWorld(position * -1.f));
-	//auto L = V.normalize();
+	auto N = vp.light(normal).normalize();
 
-	//auto R = reflect(L* -1.f, N);
+	auto V = vp.toView(position).normalize();
+	auto L = m_position.normalize() - V;
+	L.normalizeSelf();
 
-	//auto diff = dot(N, L);
-	//diff = diff<0.f ? 0 : diff >1.f ? 1.f : di
+	auto diff = dot(L, N);
+	diff = std::max(0.f, diff);
 
-	//auto spec = dot((position - vp.eyePos).normalize(), R);
-	//spec = spec < 0.f ? 0.f : spec;
+	auto spec = 0.f;
+	if (diff > 0.000f)
+	{
+		auto R = reflect(L, N).normalize();
 
-	//spec = pow(spec, 64);
-
-	//auto color = ambient + float3{ 1.f, 1.f, 1.f } * diff * m_intensity;
-	//color.clampSelf();
-
-	auto pos_cam = vp.toView(-position);
-	auto light_cam = vp.world2View(m_position);
-
-	auto normal_cam = vp.toView(normal).normalize();
-
-	auto L = (light_cam - pos_cam).normalize();
-
-	auto diff2 = dot(normal_cam, L);
-	diff2 = std::max(0.f, diff2);
-
-	auto R = reflect(L, normal_cam).normalize();
-	auto spec = dot(R, pos_cam);
-	spec = spec < 0.f ? 0.f : spec > 1.f ? 1.f : spec;
-	spec = powf(spec, 40.f);
-	//spec = 0.f;
-
-	auto color2 = ambient + m_color
-		* diff2 * m_intensity;
-	color2.clampSelf();
-	return color2;
+		spec = dot(R, V);
+		spec = std::pow(spec, 6);
+		spec = std::max(0.f, spec);;
+	}
+	auto color = Light::ambient + m_color * m_intensity * diff;
+	color += m_color * m_intensity * spec;
+	color.clampSelf();
+	return color;
 }
 

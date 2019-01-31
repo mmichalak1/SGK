@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="FastFloat3.h" />
     <ClInclude Include="float3.h" />
     <ClInclude Include="float4.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="VertexProcessor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="FastFloat3.cpp" />
     <ClCompile Include="float3.cpp" />
     <ClCompile Include="float4.cpp" />

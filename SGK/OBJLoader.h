@@ -11,6 +11,6 @@ public:
 
 private:
 	static float3 loadFloat3(const std::string& line);
-	static void loadIndices(const std::string& line);
+	static void loadIndices(const std::string& line, std::vector<int3>& idices, std::vector<int3>& normalIdices);
 };
 

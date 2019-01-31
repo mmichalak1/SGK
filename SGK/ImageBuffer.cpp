@@ -16,6 +16,8 @@ union colorU
 	} ARGB;
 };
 
+static_assert(sizeof(colorU) == 4, "Wrong size of colorU");
+
 constexpr uint8_t maxColor = 255;
 
 ImageBuffer::ImageBuffer(uint16_t width, uint16_t height) :
@@ -32,8 +34,9 @@ ImageBuffer::~ImageBuffer()
 {
 }
 
-void ImageBuffer::clearWithColor(const uint32_t & color)
+void ImageBuffer::clearWithColor(const float3 & clearColor)
 {
+	auto color = toColorS(clearColor);
 	for (auto &pixColor : colors)
 		pixColor = color;
 }
@@ -75,9 +78,9 @@ void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3
 	{
 		for (int j = miny; j < maxy; ++j)
 		{
-			if (((dx12 * (j - t1y) - dy12 * (i - t1x) > 0 && !tl1) || (dx12 * (j - t1y) - dy12 * (i - t1x) >=0) && tl1) &&
-				((dx23 * (j - t2y) - dy23 * (i - t2x) > 0 && !tl2) || (dx23 * (j - t2y) - dy23 * (i - t2x) >=0) && tl2) &&
-				((dx31 * (j - t3y) - dy31 * (i - t3x) > 0 && !tl3) || (dx31 * (j - t3y) - dy31 * (i - t3x) >=0) && tl3))
+			if (((dx12 * (j - t1y) - dy12 * (i - t1x) > 0 && !tl1) || (dx12 * (j - t1y) - dy12 * (i - t1x) >= 0) && tl1) &&
+				((dx23 * (j - t2y) - dy23 * (i - t2x) > 0 && !tl2) || (dx23 * (j - t2y) - dy23 * (i - t2x) >= 0) && tl2) &&
+				((dx31 * (j - t3y) - dy31 * (i - t3x) > 0 && !tl3) || (dx31 * (j - t3y) - dy31 * (i - t3x) >= 0) && tl3))
 			{
 
 				const float lambda1 = (dy23 * (i - t3x) + (t3x - t2x) * (j - t3y)) / (dy23 * (t1x - t3x) + (t3x - t2x) * (t1y - t3y));
@@ -87,9 +90,9 @@ void ImageBuffer::rasterize(const float3 &t1, const float3 &t2, const float3 &t3
 				auto depth = t1.z * lambda1 + t2.z * lambda2 + t3.z * lambda3;
 
 				int indice = j * m_width + i;
-				if(depth < depths[indice])
+				if (depth < depths[indice])
 				{
-					colors[indice] = toColor(t1Color * lambda1 + t2Color * lambda2 + t3Color * lambda3);
+					colors[indice] = toColorS(t1Color * lambda1 + t2Color * lambda2 + t3Color * lambda3);
 					depths[indice] = depth;
 				}
 			}
@@ -154,7 +157,7 @@ void ImageBuffer::rasterizePerPix(const Vertex &v1, const Vertex &v2, const Vert
 				{
 					auto position = v1.position * lambda1 + v2.position * lambda2 + v3.position * lambda3;
 					auto normal = v1.normal * lambda1 + v2.normal * lambda2 + v3.normal * lambda3;
-					colors[indice] = toColor(light.calculateLight(position, normal, vp));
+					colors[indice] = toColorS(light.calculateLight(position, normal, vp));
 					depths[indice] = depth;
 				}
 			}
@@ -169,9 +172,9 @@ void ImageBuffer::rasterize(const float3 & v1, const float3 & v2, const float3 &
 		vertProc.triangle(v1),
 		vertProc.triangle(v2),
 		vertProc.triangle(v3),
-		{1.f, 1.f, 1.f},
-		{1.f, 1.f, 1.f},
-		{1.f, 1.f, 1.f}
+		{ 1.f, 1.f, 1.f },
+		{ 1.f, 1.f, 1.f },
+		{ 1.f, 1.f, 1.f }
 	);
 }
 
@@ -187,7 +190,7 @@ void ImageBuffer::rasterize(const Vertex& v1, const Vertex & v2, const Vertex & 
 	);
 }
 
-std::vector<uint32_t>* ImageBuffer::getColors()
+std::vector<Color>* ImageBuffer::getColors()
 {
 	return &colors;
 }
@@ -216,10 +219,19 @@ uint32_t ImageBuffer::toColor(const float4 & color) const
 uint32_t ImageBuffer::toColor(const float3 & color) const
 {
 	colorU c;
-	c.ARGB.A = maxColor;
+	c.ARGB.A = 255;
 	c.ARGB.R = uint8_t(color.x * maxColor);
 	c.ARGB.G = uint8_t(color.y * maxColor);
 	c.ARGB.B = uint8_t(color.z * maxColor);
 
 	return c.uint32;
+}
+
+Color ImageBuffer::toColorS(const float3 & color) const
+{
+	return Color{
+		uint8_t(color.x * maxColor),
+		uint8_t(color.y * maxColor),
+		uint8_t(color.z *maxColor)
+	};
 }

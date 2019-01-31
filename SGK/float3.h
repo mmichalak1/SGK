@@ -21,10 +21,16 @@ public:
 		float arr[3];
 	};
 
+	float& operator[] (int index)
+	{
+		return arr[index];
+	}
+
 	float operator[] (int index) const
 	{
 		return arr[index];
 	}
+
 
 	float3& operator += (const float3 &other)
 	{
@@ -41,16 +47,18 @@ public:
 	}
 
 
+	inline float3& operator *=(const float number)
+	{
+		x *= number;
+		y *= number;
+		z *= number;
+
+		return *this;
+	};
+
 	inline float3 operator +(const float3& other)
 	{
-#ifdef FAST
-		__m128 mmv = _mm_set_ps(0.f, z, y, x);
-		__m128 mmv = _mm_set_ps(0.f, other.z, other.y, other.x);
-
-
-#else // FASR
 		return { x + other.x, y + other.y, z + other.z };
-#endif
 	}
 
 	inline float3 operator *(const float3& other) const
@@ -61,7 +69,7 @@ public:
 
 	inline float3 operator -() const
 	{
-		return float3 { -x, -y, -z };
+		return float3{ x*-1.f, y * -1.f, z * -1.f, };
 	}
 
 	void normalizeSelf();

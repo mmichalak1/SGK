@@ -61,6 +61,24 @@ float3 VertexProcessor::triangle(const float3 & v) const
 	return float3{pos.x/pos.w, pos.y/pos.w, pos.z/pos.w};
 }
 
+float3 VertexProcessor::light(const float3 & v) const
+{
+	auto result = float3(0.f, 0.f, 0.f);
+	float3 a = float3(obj2view[0][0], obj2view[0][1], obj2view[0][2]);
+	float3 b = float3(obj2view[1][0], obj2view[1][1], obj2view[1][2]);
+	float3 c = float3(obj2view[2][0], obj2view[2][1], obj2view[2][2]);
+
+	for (int i = 0; i < 3; i++)
+	{
+		result[i] = 0;
+		result[i] += a[i] * v[0];
+		result[i] += b[i] * v[1];
+		result[i] += c[i] * v[2];
+	}
+
+	return result;
+}
+
 float3 VertexProcessor::vertexToWorld(const float3 & vertex) const
 {
 	auto pos = float4(vertex.x, vertex.y, vertex.z, 1.0f);
@@ -76,7 +94,7 @@ float3 VertexProcessor::toView(const float3 & vec) const
 
 	pos = mul(pos, obj2view);
 
-	return float3{ pos.x / pos.w, pos.y / pos.w, pos.z / pos.w };
+	return float3{ pos.x, pos.y, pos.z };
 }
 
 float3 VertexProcessor::world2View(const float3 vec) const
