@@ -18,6 +18,7 @@ Mesh OBJLoader::loadFromFile(const std::string& filename)
 
 	auto points = std::vector<float3>();
 	auto normals = std::vector<float3>();
+
 	auto triangles = std::vector<int3>();
 	auto normalIndices = std::vector<int3>();
 

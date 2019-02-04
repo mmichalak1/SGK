@@ -36,7 +36,7 @@ float3 PointLight::calculateLight(const float3 position, const float3 & normal, 
 	auto N = vp.light(normal).normalize();
 
 	auto V = vp.toView(position).normalize();
-	auto L = m_position.normalize() - V;
+	auto L = m_position - V;
 	L.normalizeSelf();
 
 	auto diff = dot(L, N);
@@ -59,10 +59,10 @@ float3 PointLight::calculateLight(const float3 position, const float3 & normal, 
 
 float3 PointLight::calculateLightNoClamps(const float3 position, const float3 & normal, const VertexProcessor & vp) const
 {
-	auto N = vp.light(normal).normalize();
+	auto N = vp.light(normal).normalize(); //obj2View (3x3)
 
-	auto V = vp.toView(position).normalize();
-	auto L = m_position.normalize() - V;
+	auto V = vp.toView(position); //obj2view
+	auto L = vp.world2View(m_position) - V; //world2View
 	L.normalizeSelf();
 
 	auto diff = dot(L, N);
@@ -73,12 +73,13 @@ float3 PointLight::calculateLightNoClamps(const float3 position, const float3 & 
 	{
 		auto R = reflect(L, N).normalize();
 
-		spec = dot(R, V);
+		spec = dot(R, V.normalize());
+		spec = std::max(0.f, spec);
 		spec = std::pow(spec, m_specPow);
-		spec = std::max(0.f, spec);;
+
 	}
 	auto color = m_color * m_intensity * diff;
-	color += m_color * m_intensity * spec;
+	color += float3{ 1.0f, 1.0f, 1.0f } *m_intensity * spec;
 	color.clampSelf();
 	return color;
 }
